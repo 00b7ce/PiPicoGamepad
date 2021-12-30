@@ -46,13 +46,11 @@ enum
     HID_USAGE_PAGE   ( HID_USAGE_PAGE_DESKTOP                 ) ,\
     HID_USAGE        ( HID_USAGE_DESKTOP_X                    ) ,\
     HID_USAGE        ( HID_USAGE_DESKTOP_Y                    ) ,\
-    HID_USAGE        ( HID_USAGE_DESKTOP_Z                    ) ,\
-    HID_USAGE        ( HID_USAGE_DESKTOP_RZ                   ) ,\
     HID_USAGE        ( HID_USAGE_DESKTOP_RX                   ) ,\
     HID_USAGE        ( HID_USAGE_DESKTOP_RY                   ) ,\
     HID_LOGICAL_MIN  ( 0x81                                   ) ,\
     HID_LOGICAL_MAX  ( 0x7f                                   ) ,\
-    HID_REPORT_COUNT ( 6                                      ) ,\
+    HID_REPORT_COUNT ( 4                                      ) ,\
     HID_REPORT_SIZE  ( 8                                      ) ,\
     HID_INPUT        ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ) ,\
     /* 8 bit DPad/Hat Button Map  */ \
@@ -75,5 +73,6 @@ enum
     HID_REPORT_SIZE  ( 1                                      ) ,\
     HID_INPUT        ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ) ,\
   HID_COLLECTION_END \
+
 
 #endif /* USB_DESCRIPTORS_H_ */

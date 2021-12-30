@@ -27,8 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "bsp/board.h"
-#include "tusb.h"
+#include "PiPicoGamepad.h"
 
 /* This example demonstrate HID Generic raw Input & Output.
  * It will receive data from Host (In endpoint) and echo back (Out endpoint).
@@ -59,7 +58,6 @@
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
-
 /* Blink pattern
  * - 250 ms  : device not mounted
  * - 1000 ms : device mounted
@@ -74,6 +72,7 @@ enum  {
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
+void hid_task(void);
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -86,9 +85,48 @@ int main(void)
   {
     tud_task(); // tinyusb device task
     led_blinking_task();
+
+    hid_task();
   }
 
   return 0;
+}
+
+//--------------------------------------------------------------------+
+// HID report
+//--------------------------------------------------------------------+
+bool mkb_hid_n_gamepad_report(uint8_t instance, uint8_t report_id, int8_t x, int8_t y, int8_t z, int8_t rz, int8_t rx, int8_t ry, uint8_t hat, uint32_t buttons)
+{
+  gamepad_report_t report =
+  {
+    .x       = x,
+    .y       = y,
+    .rx      = rx,
+    .ry      = ry,
+    .hat     = hat,
+    .buttons = buttons,
+  };
+
+  return tud_hid_n_report(instance, report_id, &report, sizeof(report));
+}
+
+//--------------------------------------------------------------------+
+// USB HID
+//--------------------------------------------------------------------+
+void hid_task(void)
+{
+  // Poll every 10ms
+  const uint32_t interval_ms = 1;
+  static uint32_t start_ms = 0;
+
+  if (board_millis() - start_ms < interval_ms) return; // not enough time
+  start_ms += interval_ms;
+
+  if (tud_hid_n_ready(ITF_GAMEPAD))
+  {
+    // use to avoid send multiple consecutive zero report for keyboard
+    mkb_hid_n_gamepad_report(ITF_GAMEPAD, 4, 0, 0, 0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+  }
 }
 
 //--------------------------------------------------------------------+
