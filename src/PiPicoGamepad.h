@@ -3,6 +3,8 @@
 
 #include "bsp/board.h"
 #include "tusb.h"
+#include "pico/multicore.h"
+#include "hardware/flash.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES

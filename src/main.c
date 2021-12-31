@@ -23,18 +23,24 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
+void core1_main(void)
+{
+  while(1)
+  {
+    led_blinking_task();
+  }
+}
+
 /*------------- MAIN -------------*/
 int main(void)
 {
   board_init();
-
   tusb_init();
 
+  multicore_launch_core1(core1_main);
   while (1)
   {
     tud_task(); // tinyusb device task
-    led_blinking_task();
-
     hid_task();
   }
 

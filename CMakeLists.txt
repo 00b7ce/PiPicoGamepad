@@ -16,6 +16,6 @@ target_sources(PiPicoGamepad PUBLIC
 target_include_directories(PiPicoGamepad PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/src/)
 
-target_link_libraries(PiPicoGamepad PUBLIC pico_stdlib tinyusb_device tinyusb_board)
+target_link_libraries(PiPicoGamepad PUBLIC pico_stdlib tinyusb_device tinyusb_board pico_multicore hardware_flash)
 
 pico_add_extra_outputs(PiPicoGamepad)
