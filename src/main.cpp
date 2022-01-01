@@ -46,24 +46,7 @@ enum  {
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
-
-//--------------------------------------------------------------------+
-// HID report
-//--------------------------------------------------------------------+
-bool mkb_hid_n_gamepad_report(uint8_t instance, uint8_t report_id, int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint16_t buttons)
-{
-  gamepad_report_t report =
-  {
-    .x       = x,
-    .y       = y,
-    .rx      = rx,
-    .ry      = ry,
-    .hat     = hat,
-    .buttons = buttons,
-  };
-
-  return tud_hid_n_report(instance, report_id, &report, sizeof(report));
-}
+gamepad_report_t gen_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
 
 
 //--------------------------------------------------------------------+
@@ -77,7 +60,7 @@ private:
   uint32_t start_ms;
 public:
   HIDTask(uint8_t, uint8_t);
-  void send_report();
+  void send_report(uint8_t, void const*, uint8_t);
 };
 
 HIDTask::HIDTask(uint8_t _itf, uint8_t _interval)
@@ -87,15 +70,14 @@ HIDTask::HIDTask(uint8_t _itf, uint8_t _interval)
   this->start_ms = 0;
 }
 
-void HIDTask::send_report()
+void HIDTask::send_report(uint8_t _report_id, void const* _report, uint8_t _len)
 {
   if (board_millis() - this->start_ms < this->interval_ms) return; // not enough time
   this->start_ms += this->interval_ms;
 
   if (tud_hid_n_ready(this->itf))
   {
-    // use to avoid send multiple consecutive zero report for keyboard
-    mkb_hid_n_gamepad_report(this->itf, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+    tud_hid_n_report(this->itf, _report_id, _report, _len);
   }
 }
 
@@ -123,14 +105,36 @@ int main(void)
 
   multicore_launch_core1(core1_main);
 
+  gamepad_report_t report;
+
+  report = gen_report(0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+
   while (1)
   {
     tud_task(); // tinyusb device task
-    itf_gamepad.send_report();
-    itf_data.send_report();
+    itf_gamepad.send_report(REPORT_ID_GAMEPAD, &report, sizeof(report));
+    itf_data.send_report(REPORT_ID_CONSUMER_CONTROL, &report, sizeof(report));
   }
 
   return 0;
+}
+
+//--------------------------------------------------------------------+
+// Generate report struct for gamepad
+//--------------------------------------------------------------------+
+gamepad_report_t gen_report(int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint16_t buttons)
+{
+  gamepad_report_t report =
+  {
+    .x       = x,
+    .y       = y,
+    .rx      = rx,
+    .ry      = ry,
+    .hat     = hat,
+    .buttons = buttons,
+  };
+
+  return report;
 }
 
 //--------------------------------------------------------------------+
@@ -165,9 +169,8 @@ void tud_resume_cb(void)
 }
 
 //--------------------------------------------------------------------+
-// USB HID
+// USB HID callbacks
 //--------------------------------------------------------------------+
-
 // Invoked when received GET_REPORT control request
 // Application must fill buffer report's content and return its length.
 // Return zero will cause the stack to STALL request
