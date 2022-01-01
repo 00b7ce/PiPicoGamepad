@@ -5,6 +5,7 @@
 #include "tusb.h"
 #include "pico/multicore.h"
 #include "hardware/flash.h"
+#include "usb_descriptors.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -21,17 +22,8 @@ typedef struct TU_ATTR_PACKED
 
 enum
 {
-  ITF_GAMEPAD,
-  ITF_DATA
-};
-
-enum
-{
-  REPORT_ID_KEYBOARD = 1,
-  REPORT_ID_MOUSE,
-  REPORT_ID_CONSUMER_CONTROL,
-  REPORT_ID_GAMEPAD,
-  REPORT_ID_COUNT
+  ITF_GAMEPAD = ITF_NUM_HID1,
+  ITF_DATA = ITF_NUM_HID2
 };
 
 #endif /* PIPICOGAMEPAD */

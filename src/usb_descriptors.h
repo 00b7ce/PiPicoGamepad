@@ -49,6 +49,13 @@ enum
   EPNUM_HID2
 };
 
+enum
+{
+  REPORT_INTERVAL_HID1 = 1,
+  REPORT_INTERVAL_HID2 = 100
+};
+
+
 #define MKB_HID_REPORT_DESC_GAMEPAD(...) \
   HID_USAGE_PAGE ( HID_USAGE_PAGE_DESKTOP     )                 ,\
   HID_USAGE      ( HID_USAGE_DESKTOP_GAMEPAD  )                 ,\

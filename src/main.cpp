@@ -118,8 +118,8 @@ int main(void)
   board_init();
   tusb_init();
 
-  HIDTask itf_gamepad(ITF_GAMEPAD, 1);
-  HIDTask itf_data(ITF_DATA, 100);
+  HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
+  HIDTask itf_data(ITF_DATA, REPORT_INTERVAL_HID2);
 
   multicore_launch_core1(core1_main);
 
