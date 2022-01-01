@@ -36,6 +36,19 @@ enum
   REPORT_ID_COUNT
 };
 
+enum
+{
+  ITF_NUM_HID1,
+  ITF_NUM_HID2,
+  ITF_NUM_TOTAL
+};
+
+enum
+{
+  EPNUM_HID1 = 1,
+  EPNUM_HID2
+};
+
 #define MKB_HID_REPORT_DESC_GAMEPAD(...) \
   HID_USAGE_PAGE ( HID_USAGE_PAGE_DESKTOP     )                 ,\
   HID_USAGE      ( HID_USAGE_DESKTOP_GAMEPAD  )                 ,\

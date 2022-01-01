@@ -1,3 +1,28 @@
+/* 
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 Ha Thach (tinyusb.org)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,6 +47,7 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
 void hid_task(void);
+void data_task(void);
 
 void core1_main(void)
 {
@@ -42,6 +68,7 @@ int main(void)
   {
     tud_task(); // tinyusb device task
     hid_task();
+    data_task();
   }
 
   return 0;
@@ -81,6 +108,24 @@ void hid_task(void)
   {
     // use to avoid send multiple consecutive zero report for keyboard
     mkb_hid_n_gamepad_report(ITF_GAMEPAD, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+  }
+}
+
+//--------------------------------------------------------------------+
+// Send Data
+//--------------------------------------------------------------------+
+void data_task(void)
+{
+  // Poll every 10ms
+  const uint32_t interval_ms = 100;
+  static uint32_t start_ms = 0;
+
+  if (board_millis() - start_ms < interval_ms) return; // not enough time
+  start_ms += interval_ms;
+
+  if (tud_hid_n_ready(ITF_DATA))
+  {
+    mkb_hid_n_gamepad_report(ITF_DATA, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_DOWN, GAMEPAD_BUTTON_B);
   }
 }
 
@@ -139,12 +184,19 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
   // This example doesn't use multiple report and report ID
-  (void) itf;
-  (void) report_id;
-  (void) report_type;
+  // (void) itf;
+  // (void) report_id;
+  // (void) report_type;
+  // static bool led_state = false;
 
   // echo back anything we received from host
-  tud_hid_report(0, buffer, bufsize);
+  // while (!tud_hid_n_ready(itf));
+  // tud_hid_n_report(itf, 0, buffer, 64);
+  // tud_hid_report(0, buffer, bufsize);
+
+  // board_led_write(led_state);
+  // led_state = 1 - led_state; // toggle
+  // is_received = true;
 }
 
 //--------------------------------------------------------------------+

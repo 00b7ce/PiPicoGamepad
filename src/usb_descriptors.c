@@ -70,9 +70,14 @@ uint8_t const * tud_descriptor_device_cb(void)
 // HID Report Descriptor
 //--------------------------------------------------------------------+
 
-uint8_t const desc_hid_report[] =
+uint8_t const desc_hid_report1[] =
 {
   MKB_HID_REPORT_DESC_GAMEPAD(HID_REPORT_ID(REPORT_ID_GAMEPAD))
+};
+
+uint8_t const desc_hid_report2[] =
+{
+  TUD_HID_REPORT_DESC_GENERIC_INOUT(CFG_TUD_HID_EP_BUFSIZE)
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -80,23 +85,20 @@ uint8_t const desc_hid_report[] =
 // Descriptor contents must exist long enough for transfer to complete
 uint8_t const * tud_hid_descriptor_report_cb(uint8_t itf)
 {
-  (void) itf;
-  return desc_hid_report;
+  if (itf == ITF_NUM_HID1)
+  {
+    return desc_hid_report1;
+  }
+  else if (itf == ITF_NUM_HID2)
+  {
+    return desc_hid_report2;
+  }
+  return NULL;
 }
-
 //--------------------------------------------------------------------+
 // Configuration Descriptor
 //--------------------------------------------------------------------+
-
-enum
-{
-  ITF_NUM_HID,
-  ITF_NUM_TOTAL
-};
-
-#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
-
-#define EPNUM_HID   0x01
+#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
 uint8_t const desc_configuration[] =
 {
@@ -104,7 +106,8 @@ uint8_t const desc_configuration[] =
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 500),
 
   // Interface number, string index, protocol, report descriptor len, EP In & Out address, size & polling interval
-  TUD_HID_INOUT_DESCRIPTOR(ITF_NUM_HID, 0, HID_ITF_PROTOCOL_NONE, sizeof(desc_hid_report), EPNUM_HID, 0x80 | EPNUM_HID, CFG_TUD_HID_EP_BUFSIZE, 1)
+  TUD_HID_INOUT_DESCRIPTOR(ITF_NUM_HID1, 0, HID_ITF_PROTOCOL_NONE, sizeof(desc_hid_report1), EPNUM_HID1, 0x80 | EPNUM_HID1, CFG_TUD_HID_EP_BUFSIZE, 1),
+  TUD_HID_INOUT_DESCRIPTOR(ITF_NUM_HID2, 0, HID_ITF_PROTOCOL_NONE, sizeof(desc_hid_report2), EPNUM_HID2, 0x80 | EPNUM_HID2, CFG_TUD_HID_EP_BUFSIZE, 100)
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR

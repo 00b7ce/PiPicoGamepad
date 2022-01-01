@@ -19,7 +19,11 @@ typedef struct TU_ATTR_PACKED
   uint16_t buttons;  ///< Buttons mask for currently pressed buttons
 }gamepad_report_t;
 
-#define ITF_GAMEPAD 0
+enum
+{
+  ITF_GAMEPAD,
+  ITF_DATA
+};
 
 enum
 {
