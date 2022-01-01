@@ -46,38 +46,11 @@ enum  {
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
-void hid_task(void);
-void data_task(void);
-
-void core1_main(void)
-{
-  while(1)
-  {
-    led_blinking_task();
-  }
-}
-
-/*------------- MAIN -------------*/
-int main(void)
-{
-  board_init();
-  tusb_init();
-
-  multicore_launch_core1(core1_main);
-  while (1)
-  {
-    tud_task(); // tinyusb device task
-    hid_task();
-    data_task();
-  }
-
-  return 0;
-}
 
 //--------------------------------------------------------------------+
 // HID report
 //--------------------------------------------------------------------+
-bool mkb_hid_n_gamepad_report(uint8_t instance, uint8_t report_id, int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint32_t buttons)
+bool mkb_hid_n_gamepad_report(uint8_t instance, uint8_t report_id, int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint16_t buttons)
 {
   gamepad_report_t report =
   {
@@ -92,41 +65,72 @@ bool mkb_hid_n_gamepad_report(uint8_t instance, uint8_t report_id, int8_t x, int
   return tud_hid_n_report(instance, report_id, &report, sizeof(report));
 }
 
+
 //--------------------------------------------------------------------+
-// USB HID
+// HID report class
 //--------------------------------------------------------------------+
-void hid_task(void)
+class HIDTask
 {
-  // Poll every 10ms
-  const uint32_t interval_ms = 1;
-  static uint32_t start_ms = 0;
+private:
+  uint8_t itf;
+  uint8_t interval_ms;
+  uint32_t start_ms;
+public:
+  HIDTask(uint8_t, uint8_t);
+  void send_report();
+};
 
-  if (board_millis() - start_ms < interval_ms) return; // not enough time
-  start_ms += interval_ms;
+HIDTask::HIDTask(uint8_t _itf, uint8_t _interval)
+{
+  this->itf = _itf;
+  this->interval_ms = _interval;
+  this->start_ms = 0;
+}
 
-  if (tud_hid_n_ready(ITF_GAMEPAD))
+void HIDTask::send_report()
+{
+  if (board_millis() - this->start_ms < this->interval_ms) return; // not enough time
+  this->start_ms += this->interval_ms;
+
+  if (tud_hid_n_ready(this->itf))
   {
     // use to avoid send multiple consecutive zero report for keyboard
-    mkb_hid_n_gamepad_report(ITF_GAMEPAD, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+    mkb_hid_n_gamepad_report(this->itf, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
   }
 }
 
 //--------------------------------------------------------------------+
-// Send Data
+// Main(Core 1)
 //--------------------------------------------------------------------+
-void data_task(void)
+void core1_main(void)
 {
-  // Poll every 10ms
-  const uint32_t interval_ms = 100;
-  static uint32_t start_ms = 0;
-
-  if (board_millis() - start_ms < interval_ms) return; // not enough time
-  start_ms += interval_ms;
-
-  if (tud_hid_n_ready(ITF_DATA))
+  while(1)
   {
-    mkb_hid_n_gamepad_report(ITF_DATA, REPORT_ID_GAMEPAD, 0, 0, 0, 0, GAMEPAD_HAT_DOWN, GAMEPAD_BUTTON_B);
+    led_blinking_task();
   }
+}
+
+//--------------------------------------------------------------------+
+// Main(Core 0)
+//--------------------------------------------------------------------+
+int main(void)
+{
+  board_init();
+  tusb_init();
+
+  HIDTask itf_gamepad(ITF_GAMEPAD, 1);
+  HIDTask itf_data(ITF_DATA, 100);
+
+  multicore_launch_core1(core1_main);
+
+  while (1)
+  {
+    tud_task(); // tinyusb device task
+    itf_gamepad.send_report();
+    itf_data.send_report();
+  }
+
+  return 0;
 }
 
 //--------------------------------------------------------------------+

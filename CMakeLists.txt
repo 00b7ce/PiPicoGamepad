@@ -8,7 +8,7 @@ set(BOARD pico_sdk)
 add_executable(PiPicoGamepad)
 
 target_sources(PiPicoGamepad PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/src/main.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/usb_descriptors.c
         )
 
