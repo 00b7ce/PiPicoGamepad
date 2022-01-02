@@ -28,60 +28,20 @@
 #include <string.h>
 
 #include "PiPicoGamepad.h"
+#include "Debounce.h"
+#include "HIDTask.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
-/* Blink pattern
- * - 250 ms  : device not mounted
- * - 1000 ms : device mounted
- * - 2500 ms : device is suspended
- */
-enum  {
-  BLINK_NOT_MOUNTED = 250,
-  BLINK_MOUNTED = 1000,
-  BLINK_SUSPENDED = 2500,
-};
-
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
+gamepad_report_t gamepad_report;
+setting_report_t setting_report;
 
-void led_blinking_task(void);
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
 setting_report_t gen_setting_report(uint8_t , uint8_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
-
-
-//--------------------------------------------------------------------+
-// HID report class
-//--------------------------------------------------------------------+
-class HIDTask
-{
-private:
-  uint8_t itf;
-  uint8_t interval_ms;
-  uint32_t start_ms;
-public:
-  HIDTask(uint8_t, uint8_t);
-  void send_report(uint8_t, void const*, uint8_t);
-};
-
-HIDTask::HIDTask(uint8_t _itf, uint8_t _interval)
-{
-  this->itf = _itf;
-  this->interval_ms = _interval;
-  this->start_ms = 0;
-}
-
-void HIDTask::send_report(uint8_t _report_id, void const* _report, uint8_t _len)
-{
-  if (board_millis() - this->start_ms < this->interval_ms) return; // not enough time
-  this->start_ms += this->interval_ms;
-
-  if (tud_hid_n_ready(this->itf))
-  {
-    tud_hid_n_report(this->itf, _report_id, _report, _len);
-  }
-}
+void led_blinking_task(void);
 
 //--------------------------------------------------------------------+
 // Main(Core 0)
@@ -96,10 +56,7 @@ int main(void)
 
   multicore_launch_core1(core1_main);
 
-  gamepad_report_t gamepad_report;
-  setting_report_t setting_report;
-
-  gamepad_report = gen_gamepad_report(0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+  gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);
   setting_report = gen_setting_report(0, 1, 1, 0, 255, 255, 255);
 
   while (1)
