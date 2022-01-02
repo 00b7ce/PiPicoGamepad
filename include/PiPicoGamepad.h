@@ -55,4 +55,56 @@ enum
 //--------------------------------------------------------------------+
 #define FLASH_TARGET_OFFSET (256 * 1024)
 
+//--------------------------------------------------------------------+
+// Input PIO
+//--------------------------------------------------------------------+
+enum Button_pins
+{
+  PIN_BUTTON1  = 12,
+  PIN_BUTTON2  = 12,
+  PIN_BUTTON3  = 12,
+  PIN_BUTTON4  = 12,
+  PIN_BUTTON5  = 12,
+  PIN_BUTTON6  = 12,
+  PIN_BUTTON7  = 12,
+  PIN_BUTTON8  = 12,
+  PIN_BUTTON9  = 12,
+  PIN_BUTTON10 = 12,
+  PIN_BUTTON11 = 12,
+  PIN_BUTTON12 = 12,
+  PIN_BUTTON13 = 13,
+  PIN_BUTTON14 = 12,
+  PIN_BUTTON15 = 12,
+  PIN_BUTTON16 = 12,
+  PIN_UP       = 12,
+  PIN_RIGHT    = 12,
+  PIN_DOWN     = 12,
+  PIN_LEFT     = 12
+};
+
+enum
+{
+  BUTTON_1,
+  BUTTON_2,
+  BUTTON_3,
+  BUTTON_4,
+  BUTTON_5,
+  BUTTON_6,
+  BUTTON_7,
+  BUTTON_8,
+  BUTTON_9,
+  BUTTON_10,
+  BUTTON_11,
+  BUTTON_12,
+  BUTTON_13,
+  BUTTON_14,
+  BUTTON_15,
+  BUTTON_16,
+  BUTTON_UP,
+  BUTTON_RIGHT,
+  BUTTON_DOWN,
+  BUTTON_LEFT,
+  BUTTON_ALL
+};
+
 #endif /* PIPICOGAMEPAD */

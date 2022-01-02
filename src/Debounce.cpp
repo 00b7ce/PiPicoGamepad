@@ -4,7 +4,7 @@
 // Constructor
 //--------------------------------------------------------------------+
 // debounce interval = _interval[msec](default:1)
-Debounce::Debounce(uint8_t _pin, uint16_t _interval = 1)
+void Debounce::init(uint8_t _pin, uint16_t _interval = 1)
 {
     this->pin = _pin;
     this->interval_ms = _interval;
@@ -43,4 +43,12 @@ void Debounce::update(void)
 bool Debounce::read(void)
 {
     return this->state[STATE_LAST];
+}
+
+//--------------------------------------------------------------------+
+// Change interval setting
+//--------------------------------------------------------------------+
+void Debounce::set_interval(uint16_t interval)
+{
+    this->interval_ms = interval;
 }

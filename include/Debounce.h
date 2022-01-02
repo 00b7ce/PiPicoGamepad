@@ -14,9 +14,10 @@ private:
   bool is_lock;
   bool state[2];
 public:
-  Debounce(uint8_t, uint16_t);
+  void init(uint8_t, uint16_t);
   void update(void);
   bool read(void);
+  void set_interval(uint16_t);
 };
 
 enum

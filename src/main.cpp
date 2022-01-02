@@ -30,11 +30,20 @@
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
+Debounce button[BUTTON_ALL];
+const uint8_t pin[BUTTON_ALL] = { PIN_BUTTON1, PIN_BUTTON2,  PIN_BUTTON3,  PIN_BUTTON4, \
+                                  PIN_BUTTON5, PIN_BUTTON6,  PIN_BUTTON7,  PIN_BUTTON8, \
+                                  PIN_BUTTON9, PIN_BUTTON10, PIN_BUTTON11, PIN_BUTTON12,\
+                                  PIN_BUTTON13,PIN_BUTTON14, PIN_BUTTON15, PIN_BUTTON16,\
+                                  PIN_UP,      PIN_RIGHT,    PIN_DOWN,     PIN_LEFT    
+                                };
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 static bool is_updated = false;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
+void update_input(gamepad_report_t*);
+void init_input(uint16_t);
 void read_flash(setting_report_t*);
 void led_blinking_task(void);
 
@@ -54,12 +63,21 @@ int main(void)
   gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0); // Set neutral in all button and axis
   setting_report_t setting_report;                                        // Set setting at startup setting;
   read_flash(&setting_report);
+  init_input(setting_report.debounce_interval);
 
   while(1)
   {
     tud_task(); // tinyusb device task
+    update_input(&gamepad_report);
     itf_gamepad.send_report(REPORT_ID_GAMEPAD,          &gamepad_report, sizeof(gamepad_report));
-    if(is_updated) read_flash(&setting_report);
+    if(is_updated)
+    {
+      read_flash(&setting_report);
+      for(uint8_t i = 0; i < BUTTON_ALL; i++)
+      {
+        button[i].set_interval(setting_report.debounce_interval);
+      }
+    }
     itf_setting.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
   }
 
@@ -93,6 +111,32 @@ gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, ui
   };
 
   return report;
+}
+
+//--------------------------------------------------------------------+
+// Check input state and generate report
+//--------------------------------------------------------------------+
+void init_input(uint16_t interval)
+{
+  for(uint8_t i = 0; i < BUTTON_ALL; i++)
+  {
+    button[i].init(pin[i], interval);
+  }
+}
+
+//--------------------------------------------------------------------+
+// Check input state and generate report
+//--------------------------------------------------------------------+
+void update_input(gamepad_report_t* report)
+{
+  for(uint8_t i = 0; i < BUTTON_ALL; i++)
+  {
+    button[i].update();
+  }
+  for(int8_t i = BUTTON_16; i >= BUTTON_1; i--)
+  {
+    report->buttons = (report->buttons << 1) + button[i].read();
+  }
 }
 
 //--------------------------------------------------------------------+
