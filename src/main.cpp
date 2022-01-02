@@ -31,11 +31,11 @@
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
-static bool is_received = false;
+static bool is_updated = false;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
-setting_report_t read_flash(void);
+void read_flash(setting_report_t*);
 void led_blinking_task(void);
 
 //--------------------------------------------------------------------+
@@ -51,17 +51,15 @@ int main(void)
   HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
   HIDTask itf_setting(ITF_SETTING, REPORT_INTERVAL_HID2);
 
-  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);  // Set neutral in all button and axis
-  setting_report_t setting_report = read_flash();                          // Set setting at startup setting;
+  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0); // Set neutral in all button and axis
+  setting_report_t setting_report;                                        // Set setting at startup setting;
+  read_flash(&setting_report);
 
-  while (1)
+  while(1)
   {
     tud_task(); // tinyusb device task
     itf_gamepad.send_report(REPORT_ID_GAMEPAD,          &gamepad_report, sizeof(gamepad_report));
-    if(is_received) {
-      setting_report = read_flash();
-      is_received = false;
-    } 
+    if(is_updated) read_flash(&setting_report);
     itf_setting.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
   }
 
@@ -100,12 +98,10 @@ gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, ui
 //--------------------------------------------------------------------+
 // Read setting on flash, return struct
 //--------------------------------------------------------------------+
-setting_report_t read_flash(void)
+void read_flash(setting_report_t* setting)
 {
-  setting_report_t setting;
-  memcpy(&setting, (const setting_report_t *) (XIP_BASE + FLASH_TARGET_OFFSET), sizeof(setting_report_t));
-
-  return setting;
+  memcpy(setting, (const setting_report_t *) (XIP_BASE + FLASH_TARGET_OFFSET), sizeof(setting_report_t));
+  is_updated = false;
 }
 
 //--------------------------------------------------------------------+
@@ -166,7 +162,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
   flash_range_erase(FLASH_TARGET_OFFSET, FLASH_SECTOR_SIZE);
   restore_interrupts(ints);
   flash_range_program(FLASH_TARGET_OFFSET, buffer, FLASH_PAGE_SIZE);
-  is_received = true;
+  is_updated = true;
 }
 
 //--------------------------------------------------------------------+
