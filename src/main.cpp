@@ -31,12 +31,13 @@
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
+static bool is_received = false;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
 setting_report_t gen_setting_report(uint8_t , uint8_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
 setting_report_t read_flash(void);
-bool write_flash(setting_report_t* setting);
+void write_flash(uint8_t const*);
 void led_blinking_task(void);
 
 //--------------------------------------------------------------------+
@@ -59,6 +60,10 @@ int main(void)
   {
     tud_task(); // tinyusb device task
     itf_gamepad.send_report(REPORT_ID_GAMEPAD,          &gamepad_report, sizeof(gamepad_report));
+    if(is_received) {
+      setting_report = read_flash();
+      is_received = false;
+    } 
     itf_setting.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
   }
 
@@ -100,7 +105,7 @@ gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, ui
 setting_report_t read_flash(void)
 {
   setting_report_t setting;
-  memcpy(&setting, (const setting_report_t *)FLASH_DATA_OFFSET, sizeof(setting_report_t));
+  memcpy(&setting, (const setting_report_t *) (XIP_BASE + FLASH_TARGET_OFFSET), sizeof(setting_report_t));
 
   return setting;
 }
@@ -108,11 +113,13 @@ setting_report_t read_flash(void)
 //--------------------------------------------------------------------+
 // Write setting on flash
 //--------------------------------------------------------------------+
-bool write_flash(setting_report_t* setting)
+void write_flash(uint8_t const* buffer)
 {
-  bool result = false;
-
-  return result;
+  uint32_t ints = save_and_disable_interrupts();
+  flash_range_erase(FLASH_TARGET_OFFSET, FLASH_SECTOR_SIZE);
+  restore_interrupts(ints);
+  flash_range_program(FLASH_TARGET_OFFSET, buffer, FLASH_PAGE_SIZE);
+  is_received = true;
 }
 
 //--------------------------------------------------------------------+
@@ -190,9 +197,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
   (void) itf;
   (void) report_id;
   (void) report_type;
-  uint32_t ints = save_and_disable_interrupts();
-  flash_range_program(FLASH_DATA_OFFSET, buffer, FLASH_PAGE_SIZE);
-  restore_interrupts(ints);
+  write_flash(buffer);
 }
 
 //--------------------------------------------------------------------+

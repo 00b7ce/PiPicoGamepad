@@ -27,3 +27,4 @@ target_link_libraries(PiPicoGamepad PUBLIC
         )
 
 pico_add_extra_outputs(PiPicoGamepad)
+pico_set_binary_type(PiPicoGamepad copy_to_ram)
