@@ -47,7 +47,8 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
 void core1_main(void);
-gamepad_report_t gen_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
+gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
+setting_report_t gen_setting_report(uint8_t , uint8_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
 
 
 //--------------------------------------------------------------------+
@@ -95,15 +96,17 @@ int main(void)
 
   multicore_launch_core1(core1_main);
 
-  gamepad_report_t report;
+  gamepad_report_t gamepad_report;
+  setting_report_t setting_report;
 
-  report = gen_report(0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+  gamepad_report = gen_gamepad_report(0, 0, 0, 0, GAMEPAD_HAT_UP, GAMEPAD_BUTTON_A);
+  setting_report = gen_setting_report(0, 1, 1, 0, 255, 255, 255);
 
   while (1)
   {
     tud_task(); // tinyusb device task
-    itf_gamepad.send_report(REPORT_ID_GAMEPAD, &report, sizeof(report));
-    itf_data.send_report(REPORT_ID_CONSUMER_CONTROL, &report, sizeof(report));
+    itf_gamepad.send_report(REPORT_ID_GAMEPAD, &gamepad_report, sizeof(gamepad_report));
+    itf_data.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
   }
 
   return 0;
@@ -123,7 +126,7 @@ void core1_main(void)
 //--------------------------------------------------------------------+
 // Generate report struct for gamepad
 //--------------------------------------------------------------------+
-gamepad_report_t gen_report(int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint16_t buttons)
+gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t hat, uint16_t buttons)
 {
   gamepad_report_t report =
   {
@@ -133,6 +136,25 @@ gamepad_report_t gen_report(int8_t x, int8_t y, int8_t rx, int8_t ry, uint8_t ha
     .ry      = ry,
     .hat     = hat,
     .buttons = buttons,
+  };
+
+  return report;
+}
+
+//--------------------------------------------------------------------+
+// Generate report struct for setting
+//--------------------------------------------------------------------+
+setting_report_t gen_setting_report(uint8_t direction_type, uint8_t is_socd, uint16_t debounce_interval, uint8_t led_mode, uint8_t led_h, uint8_t led_s, uint8_t led_v)
+{
+  setting_report_t report =
+  {
+    .direction_type    = direction_type,
+    .is_socd           = is_socd,
+    .debounce_interval = debounce_interval,
+    .led_mode          = led_mode,
+    .led_h             = led_h,
+    .led_s             = led_s,
+    .led_v             = led_v,
   };
 
   return report;
