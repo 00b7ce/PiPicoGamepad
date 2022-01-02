@@ -23,10 +23,6 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "PiPicoGamepad.h"
 #include "Debounce.h"
 #include "HIDTask.h"
@@ -52,7 +48,7 @@ int main(void)
   tusb_init();
 
   HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
-  HIDTask itf_data(ITF_DATA, REPORT_INTERVAL_HID2);
+  HIDTask itf_setting(ITF_SETTING, REPORT_INTERVAL_HID2);
 
   multicore_launch_core1(core1_main);
 
@@ -62,8 +58,8 @@ int main(void)
   while (1)
   {
     tud_task(); // tinyusb device task
-    itf_gamepad.send_report(REPORT_ID_GAMEPAD, &gamepad_report, sizeof(gamepad_report));
-    itf_data.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
+    itf_gamepad.send_report(REPORT_ID_GAMEPAD,          &gamepad_report, sizeof(gamepad_report));
+    itf_setting.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
   }
 
   return 0;
