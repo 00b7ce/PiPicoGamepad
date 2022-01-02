@@ -34,7 +34,7 @@ typedef struct TU_ATTR_PACKED
 enum
 {
   ITF_GAMEPAD = ITF_NUM_HID1,
-  ITF_DATA = ITF_NUM_HID2
+  ITF_SETTING = ITF_NUM_HID2
 };
 
 /* Blink pattern
