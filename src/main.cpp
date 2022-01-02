@@ -31,12 +31,12 @@
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
-gamepad_report_t gamepad_report;
-setting_report_t setting_report;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
 setting_report_t gen_setting_report(uint8_t , uint8_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
+setting_report_t read_flash(void);
+bool write_flash(setting_report_t* setting);
 void led_blinking_task(void);
 
 //--------------------------------------------------------------------+
@@ -47,13 +47,13 @@ int main(void)
   board_init();
   tusb_init();
 
+  multicore_launch_core1(core1_main);
+
   HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
   HIDTask itf_setting(ITF_SETTING, REPORT_INTERVAL_HID2);
 
-  multicore_launch_core1(core1_main);
-
-  gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);
-  setting_report = gen_setting_report(0, 1, 1, 0, 255, 255, 255);
+  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);            // Set neutral in all button and axis
+  setting_report_t setting_report = gen_setting_report(0, 1, 1, 0, 255, 255, 255);   // Set setting at startup setting;
 
   while (1)
   {
@@ -92,6 +92,36 @@ gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, ui
   };
 
   return report;
+}
+
+//--------------------------------------------------------------------+
+// Read setting on flash, return struct
+//--------------------------------------------------------------------+
+setting_report_t read_flash(void)
+{
+  setting_report_t setting;
+  // setting_report_t setting =
+  // {
+  //   .direction_type    = direction_type,
+  //   .is_socd           = is_socd,
+  //   .debounce_interval = debounce_interval,
+  //   .led_mode          = led_mode,
+  //   .led_h             = led_h,
+  //   .led_s             = led_s,
+  //   .led_v             = led_v,
+  // };
+
+  return setting;
+}
+
+//--------------------------------------------------------------------+
+// Write setting on flash
+//--------------------------------------------------------------------+
+bool write_flash(setting_report_t* setting)
+{
+  bool result = false;
+
+  return result;
 }
 
 //--------------------------------------------------------------------+
