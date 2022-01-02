@@ -35,9 +35,7 @@ static bool is_received = false;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
-setting_report_t gen_setting_report(uint8_t , uint8_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
 setting_report_t read_flash(void);
-void write_flash(uint8_t const*);
 void led_blinking_task(void);
 
 //--------------------------------------------------------------------+
@@ -111,37 +109,6 @@ setting_report_t read_flash(void)
 }
 
 //--------------------------------------------------------------------+
-// Write setting on flash
-//--------------------------------------------------------------------+
-void write_flash(uint8_t const* buffer)
-{
-  uint32_t ints = save_and_disable_interrupts();
-  flash_range_erase(FLASH_TARGET_OFFSET, FLASH_SECTOR_SIZE);
-  restore_interrupts(ints);
-  flash_range_program(FLASH_TARGET_OFFSET, buffer, FLASH_PAGE_SIZE);
-  is_received = true;
-}
-
-//--------------------------------------------------------------------+
-// Generate report struct for setting
-//--------------------------------------------------------------------+
-setting_report_t gen_setting_report(uint8_t direction_type, uint8_t is_socd, uint16_t debounce_interval, uint8_t led_mode, uint8_t led_h, uint8_t led_s, uint8_t led_v)
-{
-  setting_report_t report =
-  {
-    .direction_type    = direction_type,
-    .is_socd           = is_socd,
-    .debounce_interval = debounce_interval,
-    .led_mode          = led_mode,
-    .led_h             = led_h,
-    .led_s             = led_s,
-    .led_v             = led_v,
-  };
-
-  return report;
-}
-
-//--------------------------------------------------------------------+
 // Device callbacks
 //--------------------------------------------------------------------+
 
@@ -194,10 +161,12 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
-  (void) itf;
-  (void) report_id;
-  (void) report_type;
-  write_flash(buffer);
+  // Write received data to flash
+  uint32_t ints = save_and_disable_interrupts();
+  flash_range_erase(FLASH_TARGET_OFFSET, FLASH_SECTOR_SIZE);
+  restore_interrupts(ints);
+  flash_range_program(FLASH_TARGET_OFFSET, buffer, FLASH_PAGE_SIZE);
+  is_received = true;
 }
 
 //--------------------------------------------------------------------+
