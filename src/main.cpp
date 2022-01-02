@@ -46,6 +46,7 @@ enum  {
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
+void core1_main(void);
 gamepad_report_t gen_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
 
 
@@ -82,17 +83,6 @@ void HIDTask::send_report(uint8_t _report_id, void const* _report, uint8_t _len)
 }
 
 //--------------------------------------------------------------------+
-// Main(Core 1)
-//--------------------------------------------------------------------+
-void core1_main(void)
-{
-  while(1)
-  {
-    led_blinking_task();
-  }
-}
-
-//--------------------------------------------------------------------+
 // Main(Core 0)
 //--------------------------------------------------------------------+
 int main(void)
@@ -117,6 +107,17 @@ int main(void)
   }
 
   return 0;
+}
+
+//--------------------------------------------------------------------+
+// Main(Core 1)
+//--------------------------------------------------------------------+
+void core1_main(void)
+{
+  while(1)
+  {
+    led_blinking_task();
+  }
 }
 
 //--------------------------------------------------------------------+
