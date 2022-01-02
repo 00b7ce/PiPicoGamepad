@@ -8,7 +8,7 @@
 #include "usb_descriptors.h"
 
 //--------------------------------------------------------------------+
-// MACRO CONSTANT TYPEDEF PROTYPES
+// Report struct
 //--------------------------------------------------------------------+
 typedef struct TU_ATTR_PACKED
 {
@@ -31,17 +31,18 @@ typedef struct TU_ATTR_PACKED
   uint8_t led_v;
 }setting_report_t;
 
+//--------------------------------------------------------------------+
+// Interface number
+//--------------------------------------------------------------------+
 enum
 {
   ITF_GAMEPAD = ITF_NUM_HID1,
   ITF_SETTING = ITF_NUM_HID2
 };
 
-/* Blink pattern
- * - 250 ms  : device not mounted
- * - 1000 ms : device mounted
- * - 2500 ms : device is suspended
- */
+//--------------------------------------------------------------------+
+// Blink builtin LED
+//--------------------------------------------------------------------+
 enum
 {
   BLINK_NOT_MOUNTED = 250,
@@ -49,6 +50,9 @@ enum
   BLINK_SUSPENDED = 2500
 };
 
+//--------------------------------------------------------------------+
+// Flash
+//--------------------------------------------------------------------+
 #define FLASH_TARGET_OFFSET (256 * 1024)
 
 #endif /* PIPICOGAMEPAD */
