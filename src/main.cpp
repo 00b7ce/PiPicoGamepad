@@ -52,8 +52,8 @@ int main(void)
   HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
   HIDTask itf_setting(ITF_SETTING, REPORT_INTERVAL_HID2);
 
-  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);            // Set neutral in all button and axis
-  setting_report_t setting_report = gen_setting_report(0, 1, 1, 0, 255, 255, 255);   // Set setting at startup setting;
+  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);  // Set neutral in all button and axis
+  setting_report_t setting_report = read_flash();                          // Set setting at startup setting;
 
   while (1)
   {
@@ -100,16 +100,7 @@ gamepad_report_t gen_gamepad_report(int8_t x, int8_t y, int8_t rx, int8_t ry, ui
 setting_report_t read_flash(void)
 {
   setting_report_t setting;
-  // setting_report_t setting =
-  // {
-  //   .direction_type    = direction_type,
-  //   .is_socd           = is_socd,
-  //   .debounce_interval = debounce_interval,
-  //   .led_mode          = led_mode,
-  //   .led_h             = led_h,
-  //   .led_s             = led_s,
-  //   .led_v             = led_v,
-  // };
+  memcpy(&setting, (const setting_report_t *)FLASH_DATA_OFFSET, sizeof(setting_report_t));
 
   return setting;
 }
@@ -196,20 +187,12 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
-  // This example doesn't use multiple report and report ID
-  // (void) itf;
-  // (void) report_id;
-  // (void) report_type;
-  // static bool led_state = false;
-
-  // echo back anything we received from host
-  // while (!tud_hid_n_ready(itf));
-  // tud_hid_n_report(itf, 0, buffer, 64);
-  // tud_hid_report(0, buffer, bufsize);
-
-  // board_led_write(led_state);
-  // led_state = 1 - led_state; // toggle
-  // is_received = true;
+  (void) itf;
+  (void) report_id;
+  (void) report_type;
+  uint32_t ints = save_and_disable_interrupts();
+  flash_range_program(FLASH_DATA_OFFSET, buffer, FLASH_PAGE_SIZE);
+  restore_interrupts(ints);
 }
 
 //--------------------------------------------------------------------+

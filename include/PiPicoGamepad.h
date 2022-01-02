@@ -49,4 +49,6 @@ enum
   BLINK_SUSPENDED = 2500
 };
 
+#define FLASH_DATA_OFFSET (XIP_BASE + 0x50000)
+
 #endif /* PIPICOGAMEPAD */
