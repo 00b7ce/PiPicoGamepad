@@ -26,6 +26,7 @@
 #include "PiPicoGamepad.h"
 #include "Debounce.h"
 #include "HIDTask.h"
+#include "LED.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -92,6 +93,7 @@ void core1_main(void)
   while(1)
   {
     led_blinking_task();
+    led_test();
   }
 }
 

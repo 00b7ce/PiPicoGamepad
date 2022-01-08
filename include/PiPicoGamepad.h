@@ -61,7 +61,7 @@ enum
 enum Button_pins
 {
   PIN_BUTTON1  = 12,
-  PIN_BUTTON2  = 12,
+  PIN_BUTTON2  = 13,
   PIN_BUTTON3  = 12,
   PIN_BUTTON4  = 12,
   PIN_BUTTON5  = 12,
