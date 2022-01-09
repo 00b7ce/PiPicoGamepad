@@ -90,6 +90,7 @@ int main(void)
 //--------------------------------------------------------------------+
 void core1_main(void)
 {
+  led_init();
   while(1)
   {
     led_blinking_task();

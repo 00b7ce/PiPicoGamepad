@@ -6,9 +6,10 @@
 #include "Adafruit_NeoPixel.hpp"
 
 #define PIN_LED_SIG 22
-#define NUM_LED 20
+#define NUM_LED 15
 #define DELAYVAL 200
 
+void led_init(void);
 void led_test(void);
 
 #endif /* PIPICOGAMEPAD_NEOPIXEL */
