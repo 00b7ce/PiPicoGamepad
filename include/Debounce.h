@@ -9,7 +9,7 @@ class Debounce
 {
 private:
   uint8_t pin;
-  uint8_t interval_ms;
+  uint16_t interval_ms;
   uint32_t start_ms;
   bool is_lock;
   bool state[2];

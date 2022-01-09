@@ -23,8 +23,7 @@ void Debounce::update(void)
 {
     if(this->is_lock)
     {
-        if(to_ms_since_boot(get_absolute_time()) - this->start_ms < this->interval_ms) return;
-        this->start_ms += this->interval_ms;
+        if((to_ms_since_boot(get_absolute_time()) - this->start_ms) < this->interval_ms) return;
         this->is_lock = false;
     }
     else
@@ -33,6 +32,7 @@ void Debounce::update(void)
         if(this->state[STATE_LAST] != this->state[STATE_CURRENT])
         {
             this->is_lock = true;
+            this->start_ms = to_ms_since_boot(get_absolute_time());
         }
         this->state[STATE_LAST] = this->state[STATE_CURRENT];
     }
