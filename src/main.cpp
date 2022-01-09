@@ -94,7 +94,7 @@ void core1_main(void)
   while(1)
   {
     led_blinking_task();
-    led_test();
+    led_solid((uint16_t)((197 / 360.0) * 65535), 255, 128);
   }
 }
 
