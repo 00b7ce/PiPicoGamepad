@@ -94,7 +94,9 @@ void core1_main(void)
   while(1)
   {
     led_blinking_task();
-    led_solid((uint16_t)((197 / 360.0) * 65535), 255, 128);
+    // led_solid((uint16_t)((197 / 360.0) * 65535), 255, 128);
+    // led_anim_rainbow();
+    led_anim_breath((uint16_t)((197 / 360.0) * 65535), 255);
   }
 }
 
