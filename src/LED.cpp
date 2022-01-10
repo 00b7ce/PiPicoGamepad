@@ -60,3 +60,16 @@ void led_anim_breath(uint16_t hue, uint8_t sat)
     else is_decrement = true;
   }
 }
+
+void led_anim_rainbow_solid(void)
+{
+  static uint16_t base_hue = 0;
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < 1) return;
+  start_ms++;
+
+  pixels.fill(pixels.ColorHSV(base_hue, 255, 128), 0, NUM_LED);
+
+  base_hue += 15;
+
+  pixels.show();
+}
