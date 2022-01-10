@@ -35,8 +35,23 @@ void led_anim_rainbow(void)
 
 void led_anim_gradient(uint16_t hue, uint8_t sat, uint8_t val)
 {
-  if (to_ms_since_boot(get_absolute_time()) - start_ms < DELAYVAL) return;
-  start_ms += DELAYVAL;
+  static int8_t point = 0;
+  const uint8_t range = 3;
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < 100) return;
+  start_ms += 100;
+
+  pixels.fill(pixels.ColorHSV(hue, sat, val), 0, NUM_LED);
+  
+  if((point >= 0) & (point < NUM_LED))  pixels.setPixelColor(point, pixels.ColorHSV(255, 0, 255));
+
+  for (uint8_t i = 1; i <= range; i++)
+  {
+    if(point + i < NUM_LED)  pixels.setPixelColor(point + i, pixels.ColorHSV(hue, sat * (float)(i * 0.3), 255));
+    if(point - i >= 0)       pixels.setPixelColor(point - i, pixels.ColorHSV(hue, sat * (float)(i * 0.3), 255));
+  }
+
+  pixels.show();
+  (point < NUM_LED + range) ? point++ : point = -range;
 }
 
 void led_anim_breath(uint16_t hue, uint8_t sat)
