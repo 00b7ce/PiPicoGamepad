@@ -2,15 +2,11 @@
 
 static Adafruit_NeoPixel pixels(NUM_LED, PIN_LED_SIG, NEO_GRB + NEO_KHZ800);
 static uint32_t start_ms = 0;
-uint32_t palette_rainbow[NUM_LED];
 
 void led_init()
 {
     pixels.begin();
-    for(uint8_t i = 0; i < NUM_LED; i++)
-    {
-      palette_rainbow[i] = pixels.ColorHSV((0xFFFF / NUM_LED * i), 255, 128);
-    }
+    pixels.setBrightness(128);
 }
 
 void led_solid(uint16_t hue, uint8_t sat, uint8_t val)
@@ -25,13 +21,15 @@ void led_solid(uint16_t hue, uint8_t sat, uint8_t val)
 
 void led_anim_rainbow(void)
 {
-  if (to_ms_since_boot(get_absolute_time()) - start_ms < DELAYVAL) return;
-  start_ms += DELAYVAL;
+  static uint16_t base_hue = 0;
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < 1) return;
+  start_ms++;
   for(uint8_t i = 0; i < NUM_LED; i++)
   {
-    pixels.setPixelColor(i, palette_rainbow[i]);
-    palette_rainbow[i] += pixels.ColorHSV((0xFF / NUM_LED), 255, 128);
+    pixels.setPixelColor(i, pixels.ColorHSV(base_hue + (0xFFFF / NUM_LED * i), 255, 128));
   }
+  base_hue += 50;
+
   pixels.show();
 }
 
