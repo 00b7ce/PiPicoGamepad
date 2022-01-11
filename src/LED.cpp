@@ -44,8 +44,8 @@ void led_anim_rainbow(void)
 
 void led_anim_gradient(uint16_t hue, uint8_t sat, uint8_t val)
 {
-  if (to_ms_since_boot(get_absolute_time()) - start_ms < 10) return;
-  start_ms += 10;
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < 5) return;
+  start_ms += 5;
 
   pixels.clear();
 
