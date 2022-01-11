@@ -1,12 +1,21 @@
 #include "LED.h"
+#include "algorithm"
+#include "utility"
 
 static Adafruit_NeoPixel pixels(NUM_LED, PIN_LED_SIG, NEO_GRB + NEO_KHZ800);
 static uint32_t start_ms = 0;
+std::pair<uint8_t, int8_t> palette[NUM_LED];
 
 void led_init()
 {
     pixels.begin();
     pixels.setBrightness(128);
+
+    for(int i = 0; i < NUM_LED; i++)
+    {
+      palette[i].first = 255 - (255 / NUM_LED * i);
+      (palette[i].first == 255) ? palette[i].second = -1 : palette[i].second = 1;
+    }
 }
 
 void led_solid(uint16_t hue, uint8_t sat, uint8_t val)
@@ -35,23 +44,21 @@ void led_anim_rainbow(void)
 
 void led_anim_gradient(uint16_t hue, uint8_t sat, uint8_t val)
 {
-  static int8_t point = 0;
-  const uint8_t range = 3;
-  if (to_ms_since_boot(get_absolute_time()) - start_ms < 100) return;
-  start_ms += 100;
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < 10) return;
+  start_ms += 10;
 
-  pixels.fill(pixels.ColorHSV(hue, sat, val), 0, NUM_LED);
-  
-  if((point >= 0) & (point < NUM_LED))  pixels.setPixelColor(point, pixels.ColorHSV(255, 0, 255));
+  pixels.clear();
 
-  for (uint8_t i = 1; i <= range; i++)
+  for(int i = 0; i < NUM_LED; i++)
   {
-    if(point + i < NUM_LED)  pixels.setPixelColor(point + i, pixels.ColorHSV(hue, sat * (float)(i * 0.3), 255));
-    if(point - i >= 0)       pixels.setPixelColor(point - i, pixels.ColorHSV(hue, sat * (float)(i * 0.3), 255));
+    pixels.setPixelColor(i, pixels.ColorHSV(hue, palette[i].first, 128));
+
+    palette[i].first += palette[i].second;
+
+    if((palette[i].first == 255) || (palette[i].first == 0)) palette[i].second *= -1;
   }
 
   pixels.show();
-  (point < NUM_LED + range) ? point++ : point = -range;
 }
 
 void led_anim_breath(uint16_t hue, uint8_t sat)
