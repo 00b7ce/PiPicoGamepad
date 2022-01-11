@@ -4,7 +4,7 @@
 
 static Adafruit_NeoPixel pixels(NUM_LED, PIN_LED_SIG, NEO_GRB + NEO_KHZ800);
 static uint32_t start_ms = 0;
-std::pair<uint8_t, int8_t> palette[NUM_LED];
+palette_sat_t palette[NUM_LED];
 
 void led_init()
 {
@@ -13,8 +13,8 @@ void led_init()
 
     for(int i = 0; i < NUM_LED; i++)
     {
-      palette[i].first = 255 - (255 / NUM_LED * i);
-      (palette[i].first == 255) ? palette[i].second = -1 : palette[i].second = 1;
+      palette[i].s = 255 - (255 / NUM_LED * i);
+      (palette[i].s == 255) ? palette[i].c = -1 : palette[i].c = 1;
     }
 }
 
@@ -51,11 +51,11 @@ void led_anim_gradient(uint16_t hue, uint8_t sat, uint8_t val)
 
   for(int i = 0; i < NUM_LED; i++)
   {
-    pixels.setPixelColor(i, pixels.ColorHSV(hue, palette[i].first, 128));
+    pixels.setPixelColor(i, pixels.ColorHSV(hue, palette[i].s, 128));
 
-    palette[i].first += palette[i].second;
+    palette[i].s += palette[i].c;
 
-    if((palette[i].first == 255) || (palette[i].first == 0)) palette[i].second *= -1;
+    if((palette[i].s == 255) || (palette[i].s == 0)) palette[i].c *= -1;
   }
 
   pixels.show();

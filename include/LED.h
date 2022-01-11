@@ -16,4 +16,9 @@ void led_anim_gradient(uint16_t, uint8_t, uint8_t);
 void led_anim_breath(uint16_t, uint8_t);
 void led_anim_rainbow_solid(void);
 
+typedef struct {
+  uint8_t s;
+   int8_t c;
+} palette_sat_t;
+
 #endif /* PIPICOGAMEPAD_NEOPIXEL */
