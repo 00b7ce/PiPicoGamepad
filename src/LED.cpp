@@ -24,7 +24,9 @@ void led_solid(uint16_t hue, uint8_t sat, uint8_t val)
   start_ms += DELAYVAL;
   
   pixels.clear();
+
   pixels.fill(pixels.ColorHSV(hue, sat, val), 0, NUM_LED);
+  
   pixels.show();
 }
 
@@ -33,6 +35,9 @@ void led_anim_rainbow(void)
   static uint16_t base_hue = 0;
   if (to_ms_since_boot(get_absolute_time()) - start_ms < 1) return;
   start_ms++;
+
+  pixels.clear();
+
   for(uint8_t i = 0; i < NUM_LED; i++)
   {
     pixels.setPixelColor(i, pixels.ColorHSV(base_hue + (0xFFFF / NUM_LED * i), 255, 128));
@@ -69,8 +74,11 @@ void led_anim_breath(uint16_t hue, uint8_t sat)
   start_ms += DELAYVAL / 10;
 
   pixels.clear();
+
   pixels.fill(pixels.ColorHSV(hue, sat, val), 0, NUM_LED);
+
   pixels.show();
+
   if (is_decrement)
   {
     if(val > 0) val--;
@@ -89,9 +97,23 @@ void led_anim_rainbow_solid(void)
   if (to_ms_since_boot(get_absolute_time()) - start_ms < 1) return;
   start_ms++;
 
+  pixels.clear();
+
   pixels.fill(pixels.ColorHSV(base_hue, 255, 128), 0, NUM_LED);
 
   base_hue += 15;
 
+  pixels.show();
+}
+
+void led_off(void)
+{
+  if (to_ms_since_boot(get_absolute_time()) - start_ms < DELAYVAL) return;
+  start_ms += DELAYVAL;
+  
+  pixels.clear();
+  
+  pixels.fill(pixels.ColorHSV(0, 0, 0), 0, NUM_LED);
+  
   pixels.show();
 }

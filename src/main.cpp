@@ -114,6 +114,7 @@ void core1_main(void)
         led_anim_rainbow_solid();
         break;
       default:
+        led_off();
         break;
     }
   }

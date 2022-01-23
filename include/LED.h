@@ -15,6 +15,7 @@ void led_anim_rainbow(void);
 void led_anim_gradient(uint16_t, uint8_t, uint8_t);
 void led_anim_breath(uint16_t, uint8_t);
 void led_anim_rainbow_solid(void);
+void led_off(void);
 
 typedef struct {
   uint8_t s;
