@@ -40,6 +40,8 @@ const uint8_t pin[BUTTON_ALL] = { PIN_BUTTON1, PIN_BUTTON2,  PIN_BUTTON3,  PIN_B
                                 };
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 static bool is_updated = false;
+gamepad_report_t gamepad_report; // Set neutral in all button and axis
+setting_report_t setting_report;                                        // Set setting at startup setting;
 
 void core1_main(void);
 gamepad_report_t gen_gamepad_report(int8_t, int8_t, int8_t, int8_t, uint8_t, uint16_t);
@@ -61,8 +63,8 @@ int main(void)
   HIDTask itf_gamepad(ITF_GAMEPAD, REPORT_INTERVAL_HID1);
   HIDTask itf_setting(ITF_SETTING, REPORT_INTERVAL_HID2);
 
-  gamepad_report_t gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0); // Set neutral in all button and axis
-  setting_report_t setting_report;                                        // Set setting at startup setting;
+  gamepad_report = gen_gamepad_report(0, 0, 0, 0, 0, 0);
+
   read_flash(&setting_report);
   init_input(setting_report.debounce_interval);
 
@@ -94,12 +96,26 @@ void core1_main(void)
   while(1)
   {
     led_blinking_task();
-    // led_solid((uint16_t)((197 / 360.0) * 65535), 255, 128);
-    // led_anim_gradient((uint16_t)((197 / 360.0) * 65535), 255, 128);
-    led_anim_gradient(0, 255, 128);
-    // led_anim_rainbow();
-    // led_anim_breath((uint16_t)((197 / 360.0) * 65535), 255);
-    // led_anim_rainbow_solid();
+    switch(setting_report.led_mode)
+    {
+      case SOLID_STATIC:
+        led_solid(setting_report.h, setting_report.s, setting_report.v);
+        break;
+      case SOLID_GRADIENT:
+        led_anim_gradient(setting_report.h, setting_report.s, setting_report.v);
+        break;
+      case SOLID_BREATH:
+        led_anim_breath(setting_report.h, setting_report.s);
+        break;
+      case RAINBOW_GRADIENT:
+        led_anim_rainbow();
+        break;
+      case RAINBOW_SOLID:
+        led_anim_rainbow_solid();
+        break;
+      default:
+        break;
+    }
   }
 }
 

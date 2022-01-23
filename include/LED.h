@@ -21,4 +21,13 @@ typedef struct {
   int8_t  c;
 } palette_sat_t;
 
+enum {
+  SOLID_STATIC = 0,
+  SOLID_GRADIENT,
+  SOLID_BREATH,
+  RAINBOW_GRADIENT,
+  RAINBOW_SOLID,
+  LED_OFF
+};
+
 #endif /* PIPICOGAMEPAD_NEOPIXEL */

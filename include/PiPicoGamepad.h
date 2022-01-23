@@ -22,13 +22,13 @@ typedef struct TU_ATTR_PACKED
 
 typedef struct TU_ATTR_PACKED
 {
-  uint8_t direction_type;
-  uint8_t is_socd;
+  uint8_t  direction_type;
+  uint8_t  is_socd;
   uint16_t debounce_interval;
-  uint8_t led_mode;
-  uint8_t led_h;
-  uint8_t led_s;
-  uint8_t led_v;
+  uint8_t  led_mode;
+  uint16_t h;
+  uint8_t  s;
+  uint8_t  v;
 }setting_report_t;
 
 //--------------------------------------------------------------------+
