@@ -5,7 +5,7 @@
 #include "pico/time.h"
 #include "Adafruit_NeoPixel.hpp"
 
-#define PIN_LED_SIG 22
+#define PIN_LED_SIG 16
 #define NUM_LED 15
 #define DELAYVAL 200
 
@@ -18,7 +18,7 @@ void led_anim_rainbow_solid(void);
 
 typedef struct {
   uint8_t s;
-   int8_t c;
+  int8_t  c;
 } palette_sat_t;
 
 #endif /* PIPICOGAMEPAD_NEOPIXEL */

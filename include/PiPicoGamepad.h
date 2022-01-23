@@ -60,26 +60,26 @@ enum
 //--------------------------------------------------------------------+
 enum Button_pins
 {
-  PIN_BUTTON1  = 12,
-  PIN_BUTTON2  = 13,
-  PIN_BUTTON3  = 12,
-  PIN_BUTTON4  = 12,
-  PIN_BUTTON5  = 12,
-  PIN_BUTTON6  = 12,
-  PIN_BUTTON7  = 12,
-  PIN_BUTTON8  = 12,
-  PIN_BUTTON9  = 12,
-  PIN_BUTTON10 = 12,
-  PIN_BUTTON11 = 12,
-  PIN_BUTTON12 = 12,
-  PIN_BUTTON13 = 13,
-  PIN_BUTTON14 = 12,
-  PIN_BUTTON15 = 12,
-  PIN_BUTTON16 = 12,
-  PIN_UP       = 12,
-  PIN_RIGHT    = 12,
-  PIN_DOWN     = 12,
-  PIN_LEFT     = 12
+  PIN_BUTTON1  = 0,
+  PIN_BUTTON2  = 1,
+  PIN_BUTTON3  = 2,
+  PIN_BUTTON4  = 3,
+  PIN_BUTTON5  = 4,
+  PIN_BUTTON6  = 5,
+  PIN_BUTTON7  = 6,
+  PIN_BUTTON8  = 7,
+  PIN_BUTTON9  = 8,
+  PIN_BUTTON10 = 9,
+  PIN_BUTTON11 = 10,
+  PIN_BUTTON12 = 11,
+  PIN_BUTTON13 = 12,
+  PIN_BUTTON14 = 13,
+  PIN_BUTTON15 = 14,
+  PIN_BUTTON16 = 15,
+  PIN_UP       = 21,
+  PIN_RIGHT    = 20,
+  PIN_DOWN     = 18,
+  PIN_LEFT     = 18
 };
 
 enum
