@@ -81,7 +81,7 @@ int main(void)
         button[i].set_interval(setting_report.debounce_interval);
       }
     }
-    itf_setting.send_report(REPORT_ID_CONSUMER_CONTROL, &setting_report, sizeof(setting_report));
+    itf_setting.send_report(REPORT_ID_SETTING, &setting_report, sizeof(setting_report));
   }
 
   return 0;

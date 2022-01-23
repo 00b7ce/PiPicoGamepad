@@ -33,6 +33,7 @@ enum
   REPORT_ID_MOUSE,
   REPORT_ID_CONSUMER_CONTROL,
   REPORT_ID_GAMEPAD,
+  REPORT_ID_SETTING,
   REPORT_ID_COUNT
 };
 
@@ -52,7 +53,7 @@ enum
 enum
 {
   REPORT_INTERVAL_HID1 = 1,
-  REPORT_INTERVAL_HID2 = 100
+  REPORT_INTERVAL_HID2 = 10
 };
 
 
@@ -94,5 +95,19 @@ enum
     HID_INPUT        ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ) ,\
   HID_COLLECTION_END \
 
+#define MKB_HID_REPORT_DESC_SETTING(...) \
+  HID_USAGE_PAGE ( 0x60                       )              ,\
+  HID_USAGE      ( 0x1                        )              ,\
+  HID_COLLECTION ( HID_COLLECTION_APPLICATION )              ,\
+    /* Report ID if any */\
+    __VA_ARGS__ \
+    HID_USAGE_MIN       ( 1                                   ) ,\
+    HID_USAGE_MAX       ( 9                                   ) ,\
+    HID_LOGICAL_MIN     ( 0                                   ) ,\
+    HID_LOGICAL_MAX_N   ( 255 , 2                             ) ,\
+    HID_REPORT_COUNT    ( 9                                   ) ,\
+    HID_REPORT_SIZE     ( 8                                   ) ,\
+    HID_INPUT           ( HID_DATA | HID_ARRAY | HID_ABSOLUTE ) ,\
+  HID_COLLECTION_END \
 
 #endif /* USB_DESCRIPTORS_H_ */

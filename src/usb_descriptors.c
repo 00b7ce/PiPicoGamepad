@@ -77,7 +77,7 @@ uint8_t const desc_hid_report1[] =
 
 uint8_t const desc_hid_report2[] =
 {
-  TUD_HID_REPORT_DESC_GENERIC_INOUT(CFG_TUD_HID_EP_BUFSIZE)
+  MKB_HID_REPORT_DESC_SETTING(HID_REPORT_ID(REPORT_ID_SETTING))
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
